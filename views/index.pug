@@ -1,0 +1,8 @@
+extends layout
+
+block content
+
+	ul
+		each link in news_list
+			li
+				a(href=link.url) #{link.title} #{link.date.toString()}

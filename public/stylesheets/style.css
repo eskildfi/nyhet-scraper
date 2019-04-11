@@ -1,0 +1,32 @@
+body {
+	padding: 50px;
+	font: 20px Arial, sans-serif;
+	background-color: #EEEEEE;
+	max-width: 800px;
+	margin: auto;
+}
+
+/*a {
+  color: #00B7FF;
+}*/
+
+a {
+	border-radius: 7px;
+	width: 100%;
+	color: #FFFFFF;
+	text-decoration: none;
+	background-color: #00b9f2;
+	/*background-color: #5743a0;*/
+
+    padding: 10px 20px 10px 20px;
+    display: inline-block;
+    
+}
+
+ul {
+	list-style-type: none;
+}
+
+ul>li {
+	padding-bottom: 20px;
+}
