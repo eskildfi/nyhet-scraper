@@ -8,9 +8,7 @@ var news = scraper.newsLinks;
 router.get('/', function(req, res, next) {
 	if (news.length < 1) {
 		scraper.scrape();
-		news.sort(function(a, b) {
-			return a.date-getTime() - b.date-getTime();
-		});
+
 	}
 
 	res.render('index', {news_list: news});
