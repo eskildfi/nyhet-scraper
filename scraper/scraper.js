@@ -33,7 +33,7 @@ function scrape(callback) {
 }
 
 function getInfoVg(url) {
-	if (url.match(/https:\/\/www.vgtv\.no\/.*/)) {
+	if (url.match(/https:\/\/www.vgtv\.no\/.*|https:\/\/www.godt.no.*/)) {
 		return;
 	}
 	var client = http;
@@ -46,31 +46,51 @@ function getInfoVg(url) {
 		});
 
 		res.on("end", () => {
+			var dateReg = /dateTime=\"(.+?)\"/;
 			var titleReg = /<title>(.*?)<\/title>/;
+			var dateMatch = /(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})/
 			if (url.match(/https:\/\/www.vg.no.*/)) {
 				//Matcher ikke alltid selv om umatchede sider har mønsteret???
-				titleReg = /<title data-react-helmet=\".*\">(.+)<\/title>|data-test-tag=\"headline\">(.+)</;
+				titleReg = /<title data-react-helmet=\".*\">(.+?)<\/title>|data-test-tag=\"headline\">(.+?)</;
 			}
 			else if (url.match(/https:\/\/www\.minmote.no.*/)) {
+				//Ingen publiseringsdato?
 				titleReg = /<h1>(.+?)<\/h1>|<h1 class=\"article-title\">(.+?)<\/h1>/;
 			}
-			else if (url.match(/https:\/\/familieklubben.no.*|https:\/\/www.tek.no.*/)) {
+			else if (url.match(/https:\/\/familieklubben.no.*/)) {
 				titleReg = /<meta property=\"og:title\" content=\"(.+?)\"/;
+				dateReg = /<span class=\"date\">(.+?)</;
+				dateMatch = /(\d{1,2})\.(\d{2})\.(\d{4}) (\d{2}):(\d{2})/;
+			}
+			else if (url.match(/https:\/\/www.tek.no.*/)) {
+				titleReg = /<meta property=\"og:title\" content=\"(.+?)\"/;
+				dateReg = /datetime=\"(.+?)\"/;
 			}
 			else if (url.match(/https:\/\/www.dinepenger.no.*|https:\/\/e24.no.*/)) {
 				titleReg = /<meta name=\"title\" content=\"(.+?)\"/;
-			}
-			else if (url.match(/https:\/\/www.godt.no.*/)) {
-				titleReg = /\"title\":\"(.+?)\"/;
+				dateReg = /datetime=\"(.+?)\"/;
 			}
 
 			var matches = text.match(titleReg);
 			var title = "Title not found " + url;
+			var date = null;
 			if (matches != null) {
 				var title = matches[1].replace(/&aelig;/g, 'æ').replace(/&oslash;/g, 'ø').replace(/&aring;/g, 'å');
 				title = "VG - " + title;
+				matches = text.match(dateReg);
+				if (matches != null) {
+				var m = matches[1].match(dateMatch);	
+				if (url.match(/https:\/\/www.familieklubben.no.*/)) {
+					date = new Date(m[3], m[2]-1, m[1], m[4], m[5], 0);
+				}
+				else {
+					date = new Date(m[1], m[2]-1, m[3], m[4], m[5], m[6]);
+				}
+				}
 			}
-			console.log(title);
+			if (date != null) {
+				console.log(title + date.toDateString());
+			}
 
 
 		})
