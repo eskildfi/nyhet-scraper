@@ -23,9 +23,9 @@ function readPatterns() {
 
 function scrape(callback) {
 	if (nrkPattern === undefined) readPatterns();
-	/*https.get("https://www.nrk.no/", res => {
+	https.get("https://www.nrk.no/", res => {
 		parseNrk(res);
-	});*/
+	});
 	https.get("https://www.vg.no/", res => {
 		parseVG(res);
 	});
@@ -90,9 +90,14 @@ function getInfoVg(url) {
 			}
 			if (date != null) {
 				console.log(title + date.toDateString());
+				var news = {url: url, title: title, date: date};
+				newsLinks.push(news);
 			}
-
-
+			newsLinks.sort(function (a,b) {
+				if (a.date>b.date) return -1;
+				if (b.date>a.date) return 1;
+				return 0;
+			});
 		})
 	});
 }
